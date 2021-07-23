@@ -20,12 +20,10 @@ package paddle
 // #include "paddle_c_api.h"
 import "C"
 
-import (
-	"fmt"
-	"reflect"
-	"runtime"
-	"unsafe"
-)
+import "reflect"
+import "runtime"
+import "unsafe"
+import "fmt"
 
 type Predictor struct {
 	c *C.PD_Predictor

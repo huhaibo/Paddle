@@ -18,7 +18,6 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
-
 	"github.com/paddlepaddle/paddle"
 )
 

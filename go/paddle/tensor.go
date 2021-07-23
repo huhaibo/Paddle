@@ -22,12 +22,12 @@ package paddle
 // #include <paddle_c_api.h>
 import "C"
 
+import "runtime"
+import "reflect"
+import "unsafe"
 import (
 	"bytes"
 	"encoding/binary"
-	"reflect"
-	"runtime"
-	"unsafe"
 )
 
 type PaddleDType C.PD_DataType

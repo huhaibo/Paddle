@@ -21,10 +21,8 @@ package paddle
 // #include <paddle_c_api.h>
 import "C"
 
-import (
-	"runtime"
-	"unsafe"
-)
+import "runtime"
+import "unsafe"
 
 type Precision C.Precision
 
@@ -175,7 +173,6 @@ func (config *AnalysisConfig) MkldnnQuantizerEnabled() bool {
 func (config *AnalysisConfig) MkldnnBfloat16Enabled() bool {
 	return ConvertCBooleanToGo(C.PD_MkldnnBfloat16Enabled(config.c))
 }
-
 // SetModelBuffer
 // ModelFromMemory
 
