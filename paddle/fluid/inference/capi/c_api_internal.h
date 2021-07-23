@@ -15,6 +15,7 @@
 #pragma once
 
 #include <memory>
+#include <cstring>
 #include "paddle/fluid/inference/api/paddle_analysis_config.h"
 #include "paddle/fluid/inference/api/paddle_api.h"
 #include "paddle/fluid/inference/capi/paddle_c_api.h"
@@ -44,4 +45,11 @@ paddle::PaddleDType ConvertToPaddleDType(PD_DataType dtype);
 PD_DataType ConvertToPDDataType(PD_PaddleDType dtype);
 
 PD_ACPrecision ConvertToACPrecision(Precision dtype);
-}  // namespace paddle
+}
+
+inline const char* CopyStringToCharArray(std::string &s) {
+  char *ret = (char *)malloc(s.length() + 1);
+  std::strcpy(ret, s.c_str());
+  return ret;
+}
+// namespace paddle

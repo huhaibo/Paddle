@@ -207,14 +207,14 @@ int PD_GetOutputNum(const PD_Predictor* predictor) {
 }
 
 const char* PD_GetInputName(const PD_Predictor* predictor, int n) {
-  static std::vector<std::string> names = predictor->predictor->GetInputNames();
-  return names[n].c_str();
+  std::vector<std::string> names = predictor->predictor->GetInputNames();
+  return CopyStringToCharArray(names[n]);
 }
 
 const char* PD_GetOutputName(const PD_Predictor* predictor, int n) {
-  static std::vector<std::string> names =
+  std::vector<std::string> names =
       predictor->predictor->GetOutputNames();
-  return names[n].c_str();
+  return CopyStringToCharArray(names[n]);
 }
 
 void PD_SetZeroCopyInput(PD_Predictor* predictor,
