@@ -13,69 +13,72 @@
 // limitations under the License.
 package main
 
-import "../paddle"
-import "strings"
-import "io/ioutil"
-import "strconv"
-import "reflect"
+import (
+	"io/ioutil"
+	"reflect"
+	"strconv"
+	"strings"
+
+	"github.com/paddlepaddle/paddle"
+)
 
 func main() {
 	config := paddle.NewAnalysisConfig()
 	config.SetModel("data/model/__model__", "data/model/__params__")
-    config.DisableGlogInfo()
-    config.SwitchUseFeedFetchOps(false)
-    config.SwitchSpecifyInputNames(true)
+	config.DisableGlogInfo()
+	config.SwitchUseFeedFetchOps(false)
+	config.SwitchSpecifyInputNames(true)
 
-    predictor := paddle.NewPredictor(config)
+	predictor := paddle.NewPredictor(config)
 
-    println("============== paddle inference ==============")
-    println("input num: ", predictor.GetInputNum())
-    println("input name: ", predictor.GetInputNames()[0])
-    println("output num: ", predictor.GetOutputNum())
-    println("output name: ", predictor.GetInputNames()[0])
-    println("============== run inference =================")
+	println("============== paddle inference ==============")
+	println("input num: ", predictor.GetInputNum())
+	println("input name: ", predictor.GetInputNames()[0])
+	println("output num: ", predictor.GetOutputNum())
+	println("output name: ", predictor.GetOutputNames()[0])
+	println("============== run inference =================")
 
-    input := predictor.GetInputTensors()[0]
-    output := predictor.GetOutputTensors()[0]
+	input := predictor.GetInputTensors()[0]
+	output := predictor.GetOutputTensors()[0]
 
-    filename := "data/data.txt"
-    data := ReadData(filename)
-    input.SetValue(data[:1 * 3 * 300 * 300])
-    input.Reshape([]int32{1, 3, 300, 300})
+	filename := "data/data.txt"
+	data := ReadData(filename)
+	input.SetValue(data[:1*3*300*300])
+	input.Reshape([]int32{1, 3, 300, 300})
 
-    predictor.SetZeroCopyInput(input)
-    predictor.ZeroCopyRun()
-    predictor.GetZeroCopyOutput(output)
+	predictor.SetZeroCopyInput(input)
+	predictor.ZeroCopyRun()
+	predictor.GetZeroCopyOutput(output)
 
-    println("============= parse output ===================")
-    output_val := output.Value()
-    value := reflect.ValueOf(output_val)
-    shape, dtype := paddle.ShapeAndTypeOf(value)
-    switch dtype {
-    case paddle.PaddleDType(paddle.FLOAT32):
-        v := value.Interface().([][]float32)
-        println("v: ", v[0][0], v[0][1], "...")
-    case paddle.PaddleDType(paddle.UINT8):
-        v := value.Interface().([][]uint8)
-        println("v: ", v[0][0], v[0][1], "...")
-    case paddle.PaddleDType(paddle.INT32):
-        v := value.Interface().([][]int32)
-        println("v: ", v[0][0], v[0][1], "...")
-    case paddle.PaddleDType(paddle.INT64):
-        v := value.Interface().([][]int64)
-        println("v: ", v[0][0], v[0][1], "...")
-    }
-    println(shape[0], shape[1])
-    println(output.Shape()[0])
+	println("============= parse output ===================")
+	output_val := output.Value()
+	value := reflect.ValueOf(output_val)
+	shape, dtype := paddle.ShapeAndTypeOf(value)
+	switch dtype {
+	case paddle.PaddleDType(paddle.FLOAT32):
+		v := value.Interface().([][]float32)
+		println("v: ", v[0][0], v[0][1], "...")
+	case paddle.PaddleDType(paddle.UINT8):
+		v := value.Interface().([][]uint8)
+		println("v: ", v[0][0], v[0][1], "...")
+	case paddle.PaddleDType(paddle.INT32):
+		v := value.Interface().([][]int32)
+		println("v: ", v[0][0], v[0][1], "...")
+	case paddle.PaddleDType(paddle.INT64):
+		v := value.Interface().([][]int64)
+		println("v: ", v[0][0], v[0][1], "...")
+	}
+	println(shape[0], shape[1])
+	println(output.Shape()[0])
 }
 
 func ReadData(filename string) []float32 {
-    file_bytes, _ := ioutil.ReadFile(filename)
-    data_slice := strings.Split(string(file_bytes), " ")
-    var result []float32
-    for _, n := range data_slice {
-        r, _ := strconv.ParseFloat(n, 32)
-        result = append(result, float32(r))
-    }
-    return result
+	file_bytes, _ := ioutil.ReadFile(filename)
+	data_slice := strings.Split(string(file_bytes), " ")
+	var result []float32
+	for _, n := range data_slice {
+		r, _ := strconv.ParseFloat(n, 32)
+		result = append(result, float32(r))
+	}
+	return result
 }

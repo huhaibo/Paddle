@@ -14,15 +14,18 @@
 
 package paddle
 
-// #cgo CFLAGS: -Ipaddle_c/paddle/include
-// #cgo LDFLAGS: -Lpaddle_c/paddle/lib -lpaddle_fluid_c
+// #cgo CFLAGS: -I${SRCDIR}/../paddle_c/paddle/include
+// #cgo LDFLAGS: -L${SRCDIR}/../paddle_c/paddle/lib -lpaddle_inference_c
 // #include <stdbool.h>
 // #include "paddle_c_api.h"
 import "C"
 
-import "reflect"
-import "runtime"
-import "unsafe"
+import (
+	"fmt"
+	"reflect"
+	"runtime"
+	"unsafe"
+)
 
 type Predictor struct {
 	c *C.PD_Predictor
@@ -64,6 +67,7 @@ func (predictor *Predictor) GetInputTensors() [](*ZeroCopyTensor) {
 	for i := 0; i < predictor.GetInputNum(); i++ {
 		tensor := NewZeroCopyTensor()
 		tensor.c.name = C.PD_GetInputName(predictor.c, C.int(i))
+		fmt.Println("tensor.c.name: ", C.GoString(tensor.c.name))
 		result = append(result, tensor)
 	}
 	return result
@@ -88,7 +92,7 @@ func (predictor *Predictor) GetInputNames() []string {
 }
 
 func (predictor *Predictor) GetOutputNames() []string {
-	names := make([]string, predictor.GetInputNum())
+	names := make([]string, predictor.GetOutputNum())
 	for i := 0; i < len(names); i++ {
 		names[i] = predictor.GetOutputName(i)
 	}

@@ -14,15 +14,17 @@
 
 package paddle
 
-// #cgo CFLAGS: -Ipaddle_c/paddle/include
-// #cgo LDFLAGS: -Lpaddle_c/paddle/lib -lpaddle_fluid_c
+// #cgo CFLAGS: -I${SRCDIR}/../paddle_c/paddle/include
+// #cgo LDFLAGS: -L${SRCDIR}/../paddle_c/paddle/lib -lpaddle_inference_c -lm -ldl
 // #include <stdbool.h>
 // #include <stdlib.h>
 // #include <paddle_c_api.h>
 import "C"
 
-import "runtime"
-import "unsafe"
+import (
+	"runtime"
+	"unsafe"
+)
 
 type Precision C.Precision
 
@@ -94,6 +96,10 @@ func (config *AnalysisConfig) MemoryPoolInitSizeMb() int {
 	return int(C.PD_MemoryPoolInitSizeMb(config.c))
 }
 
+func (config *AnalysisConfig) FractionOfGpuMemoryForPool() float32 {
+	return float32(C.PD_FractionOfGpuMemoryForPool(config.c))
+}
+
 func (config *AnalysisConfig) EnableCudnn() {
 	C.PD_EnableCUDNN(config.c)
 }
@@ -142,6 +148,10 @@ func (config *AnalysisConfig) EnableMkldnn() {
 	C.PD_EnableMKLDNN(config.c)
 }
 
+func (config *AnalysisConfig) MkldnnEnabled() bool {
+	return ConvertCBooleanToGo(C.PD_MkldnnEnabled(config.c))
+}
+
 func (config *AnalysisConfig) SetCpuMathLibraryNumThreads(n int) {
 	C.PD_SetCpuMathLibraryNumThreads(config.c, C.int(n))
 }
@@ -165,6 +175,7 @@ func (config *AnalysisConfig) MkldnnQuantizerEnabled() bool {
 func (config *AnalysisConfig) MkldnnBfloat16Enabled() bool {
 	return ConvertCBooleanToGo(C.PD_MkldnnBfloat16Enabled(config.c))
 }
+
 // SetModelBuffer
 // ModelFromMemory
 
